@@ -1,2 +1,2 @@
 release: python3 manage.py migrate --noinput
-web: gunicorn gocafe.wsgi
+web: gunicorn go_cafe.wsgi

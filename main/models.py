@@ -7,3 +7,6 @@ class Product(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     quantity = models.IntegerField()
+    name_person = models.CharField(max_length=255)
+    class_name = models.TextField()
+    npm = models.IntegerField()

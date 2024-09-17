@@ -14,7 +14,7 @@ def show_main(request):
         'name_person' : 'Rajendra Rifqi Baskara',
         'class_name': 'PBP C',
         'npm' : '2306245680',
-        'product' : product_entry,
+        'product_entries' : product_entry,
     }
 
     return render(request, "main.html", context)

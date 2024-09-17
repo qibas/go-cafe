@@ -303,46 +303,44 @@ urlpatterns = [
 
 ```
 
-- Modifikasi `main/templates/main.html` yang sudah dibuat ditugas sebelumnya untuk menampilkan setiap data products 
+- Modifikasi `main/templates/main.html` yang sudah dibuat ditugas sebelumnya untuk menampilkan setiap data products. Saya menambahkan strukturtabel yang lebih simple dari tugas sebelumnya agar lebih mudah dibaca dan lebih rapih dengan border.
 ```bash
 {% extends 'base.html' %}
 {% block content %}
-<h1>GO CAFE</h1>
-<p>Project by: {{ name_person }} - {{ npm }} - {{ class_name }}</p>
-<!-- Ubah sesuai dengan npm kamu -->
-<h5>Name Product: </h5>
-<p>{{ name }}</p> <!-- Ubah sesuai dengan nama kamu -->
-<h5>Price: </h5>
-<p>{{ price }}</p> <!-- Ubah sesuai dengan kelas kamu -->
-<h5>Description: </h5>
-<p>{{ description }}</p>
-
-{% if not product_entries %}
-<p>Belum ada data produk pada GetSupply.</p>
-{% else %}
-<table>
-  <tr>
-    <th>Coffee Name</th>
-    <th>Price</th>
-    <th>Description</th>
-  </tr>
-
-  {% for product_entry in product_entries %}
-  <tr>
-    <td>{{product_entry.name}}</td>
-    <td>{{product_entry.price}}</td>
-    <td>{{product_entry.description}}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
-<br />
-
-<a href="{% url 'main:create_product' %}">
-  <button>Add New product</button>
-</a>
+<div style="text-align:center;">
+    <h1>GO CAFE</h1>
+    <p>Project by 🍵: {{ name_person }} - {{ npm }} - {{ class_name }}</p>
+    
+    {% if not product_entries %}
+    <p>Belum ada data produk pada GoCafe.</p>
+    {% else %}
+    <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="border: 2px solid #ce5509; padding: 8px;">Coffee Name</th>
+                <th style="border: 2px solid #ce5509; padding: 8px;">Price</th>
+                <th style="border: 2px solid #ce5509; padding: 8px;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product_entry in product_entries %}
+            <tr>
+                <td style="border: 2px solid #ce5509; padding: 8px;">{{ product_entry.name }}</td>
+                <td style="border: 2px solid #ce5509; padding: 8px;">{{ product_entry.price }}</td>
+                <td style="border: 2px solid #ce5509; padding: 8px;">{{ product_entry.description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
+    <br />
+    <a href="{% url 'main:create_product' %}">
+        <button style="padding: 10px 20px; font-size: 16px;">Add Product</button>
+    </a>
+</div>
 {% endblock content %}
+
 ```
 
 - Modifikasi `views.py` untuk menampilkan data dalam format XML dan JSON, serta menampilkan data produk sesuai id.

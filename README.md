@@ -396,6 +396,360 @@ urlpatterns = [
 # Tugas 4
 [Back to Contents](#contents)
 
+## Perbedaan antara `HttpResponseRedirect()` dan `redirect()`
+
+`Redirect()`: redirect ini berguna untuk menampilkan halaman setelah akun berhasil dibuat dari metode permintaan POST.
+```bash
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+Dalam fungsi redirect akan segera menampilakn ke halaman `main:;login`
+
+`HttpResponseRedirect()`: metode ini sebenernya mirip fungsinya dengan `redirect()`, tetapi metode ini menggunakan sintaks yang lebih manual.
+```bash
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            response = HttpResponseRedirect(reverse("main:show_main"))
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+    else:
+        form = AuthenticationForm(request)
+    context = {'form': form}
+    return render(request, 'login.html', context)
+```
+
+Memerlukan reverse() untuk mengubah URL pattern name menjadi URL sebenernya, sehingga sintaks lebih panjang.
+
+## Cara kerja penghubungan model Product dengan User
+Pada model `Product`, ada field user yang didefinisikan sebagai `ForeignKey` yang mengarah ke model `User` 
+```bash
+user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+
+ForeignKey ini menunjukkan bahwa setiap produk (Product) terkait dengan satu pengguna (User), tetapi satu pengguna bisa memiliki banyak produk. Inilah yang disebut dengan relasi `one-to-many.`
+
+Dalam fungsi `show_main`, setiap pengguna yang login akan mendapatkan produk yang dibuat dengan menggunakan filter dibawah ini
+```bash
+Product.objects.filter(user=request.user)
+```
+`request.user` mengacu pada objek User yang saat ini login. Dengan demikian, filter(user=request.user) akan mencari semua produk yang dimiliki oleh pengguna yang login.
+
+## Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
+Dalam keamanaan web, kedua tahap tersebut sangat dierplukan dalam penegembangan web.
+`Authentication`: adalah untuk melakukan autentikasi dan login kepada user yang sudah membuat akun. Fungsi ini memastikan validasi jika pengguna melakukan verifikasinya sudah benar saat masuk kedalam server.
+
+`Authorization`: adalah untuk mengontrol akses apa saja yang bisa dilakukan oleh user saat memasuki server setelah berhasil di diautentikasi. Jadi fungsi ini bisa menentukan user dalam pengaksesan web.
+
+Proses Saat Pengguna Login:
+**1. Pengguna Mengisi Form Login:**
+- Pengguna mengisi form login dengan username dan password.
+- Form login dikirimkan ke server melalui permintaan POST.
+
+**2. Proses Authentication:**
+
+- AuthenticationForm digunakan untuk memvalidasi kredensial yang dimasukkan oleh pengguna.
+- Jika form valid (form.is_valid()), maka sistem mengekstrak pengguna (user = form.get_user()) dan memverifikasi kredensial tersebut.
+- Jika kredensial cocok dengan yang ada di database, pengguna dianggap terotentikasi.
+```bash
+def login_user(request):
+...
+if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        response = HttpResponseRedirect(reverse("main:show_main"))
+        response.set_cookie('last_login', str(datetime.datetime.now()))
+        return response
+...
+```
+**3. Proses Login:**
+- Fungsi `login(request,user)` diatas digunakan untuk membuat sesi autentikasi bagi pengguna. Django menyimpan informasi pengguna di sesi dan mengatur cookie untuk melacak sesi pengguna tersebut.
+```bash
+login(request, user)
+```
+
+**4. Mengatur Cookie atau Metadata:**
+Setelah login, kamu dapat mengatur cookie seperti last_login untuk melacak kapan pengguna terakhir kali login, menggunakan:
+```bash
+response.set_cookie('last_login', str(datetime.datetime.now()))
+```
+
+**Implementasi kedua tahap tersebut:**
+`Authentication`:
+- Django menggunakan sistem autentikasi bawaan yang mudah digunakan, di mana authenticate() memverifikasi kredensial pengguna terhadap database.
+- Fungsi login() membuat sesi pengguna terotentikasi, memungkinkan pengguna untuk mengakses aplikasi sebagai pengguna yang valid.
+
+`Authorization`:
+- Django menyediakan mekanisme otorisasi yang terintegrasi, seperti `@login_required` untuk membatasi akses hanya kepada pengguna yang sudah login.
+
+## Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?
+
+1. Awalnya pengguna disuruh mengisi form login dan mengirimkan ke permintaan POST.
+2. Jika kredensialnya benar, maka `login(request,user)` membuat sesi dan menetapkan cookie sesi *(sessionid)*.
+3. Django mengingat pengguna yang login dengan *(sessionid)* ini ke browser pengguna sebagai bagian dari response HTTP setelah login dan memuatnya pada setiap permintaan berikutnya. Jika ID sesi valid, Django akan mengenali pengguna.
+4. Pengguna dapat diakses melalui `request.user`, seperti produk yang dimiliki pengguna tersebut
+
+*Cookies memiliki kegunaan lain*:
+1. Menyimpan item yang dtitambahkan pengguna, seperti mengelola keranjang belanja di E-Commerce
+2. Menjadi pengingat atau notifikasi 
+3. Melacak atau Tracking aktifitas pengguna, seperti waktu yang dikunjungi dll.
+
+## Step-by-step Checklist
+
+pertama-tama kita mengimport bawaan dari djagno untuk mengisi formulir pendaftaran saat register akun di direktori `views.py`,
+```bash
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+```
+lalu tambahkan fungsi register,
+```bash
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+lalu kita buat berkas register.html di direktori `main/templates/`
+```bash
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+
+<div class="login">
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Daftar" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock content %}
+```
+
+Tag `{{ form.as_table }} `untuk memudahkan membuat form yang berbentuk tabel agar format lebih jelas.
+
+Lalu kita atur path url ke dalam urlpatterns di direktori `urls.py` untuk mengakses fungsi register ke peramban web.
+```bash
+path('register/', register, name='register'),
+```
+
+Setelah itu kita buat fungsi login_user di `views.py`
+```bash
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('main:show_main')
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+```
+
+Setelah itu, buat tampilan di direktori `main/templates` dengan file `login.html `
+```bash
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+
+{% endblock content %}
+```
+
+lalu kita set kembali path url ke dalam urlpatterns di direktori `urls.py`
+
+Setelah kita membuat akun, kita buat fungsi logout dengan mengimport bawaan dari django di direktori `views.py`
+```bash
+from django.contrib.auth import logout
+```
+
+lalu buat fungsi logoutnya
+```bash
+def logout_user(request):
+    logout(request)
+    return redirect('main:login')
+```
+
+lalu tambahkan button logout di bawah create product di direktori `main/templates/main.html/`
+```bash
+<br />
+    <a href="{% url 'main:create_product' %}">
+        <button style="padding: 10px 20px; font-size: 16px;">Add Product</button>
+    </a>
+
+    <a href="{% url 'main:logout' %}">
+        <button style="padding: 10px 20px; font-size: 16px; margin-top: 10px;">Logout</button>
+        <h5>Sesi terakhir login: {{ last_login }}</h5>
+    </a>
+```
+
+`{% url 'main:logout' %}` digunakan untuk mengarah ke URL secara dinamis berdasarkan app_name dan name yang sudah didefinisikan di `urls.py`
+
+Kita inisiasikan path url logout di `urls.py `
+```bash
+from main.views import logout_user
+...
+
+urlpatterns = [
+    ...
+    path('logout/', logout_user, name='logout') 
+    ...
+]
+```
+
+## SS Akun dengan dummy masing-masing
+
+**Akun: Qibas**
+<img width="1324" alt="Screenshot 2024-09-22 at 12 40 21" src="https://github.com/user-attachments/assets/e5b1f7d6-5936-4e7e-88f7-96311b3e3718">
+
+**Dummy Akun: Qibas**
+<img width="1338" alt="Screenshot 2024-09-22 at 12 39 03" src="https://github.com/user-attachments/assets/1a6a72e1-ea7a-49ea-a404-b328fdee10fb">
+
+**Akun: Rifqi**
+<img width="1316" alt="Screenshot 2024-09-22 at 12 46 31" src="https://github.com/user-attachments/assets/c345b09e-25ee-4473-83ba-e7f72bedc2df">
+
+**Dummy Akun: Rifqi ** 
+<img width="1321" alt="Screenshot 2024-09-22 at 12 46 15" src="https://github.com/user-attachments/assets/501fe8df-7343-413f-8e41-46a6e540bb92">
+
+
+## Langkah-langkah Menghubungkan Model `Product` dengan `User`
+
+1. Impor model user dari django
+```bash
+from django.contrib.auth.models import User
+```
+
+2. Membuat model product dengan foreignkey ke user
+```bash
+from django.db import models
+import uuid
+
+class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ...
+```
+
+foreignkey ini untuk menghubungkan setiap produk yang dibuat dengan user pengguna
+
+3. Menjalankan perintah makemigrations dan migrate di terminal direktori
+
+4. Membuat Produk di fungsi `create_product` sesuai masing-masing user dan diintegrasikan ke fungsi `show_main` untuk diambil dan disimpan berdasarkan user yang login
+```bash
+def show_main(request):
+    product_entry = Product.objects.filter(user=request.user)
+    ...
+
+def create_product(request):
+    form = ProductEntryForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product = form.save(commit=False)
+        product.user = request.user
+    ...
+```
+
+5. Menampilkan Produk di Template `main.html`
+
+## Langkah-langkah menampilkan informasi pengguna dan cookie `last_login`
+
+1. `last_login` diset setelah pengguna berhasil login 
+```bash
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            response = HttpResponseRedirect(reverse("main:show_main"))
+            response.set_cookie('last_login', str(datetime.datetime.now())) 
+```
+
+2. Ambil informasi pengguna yang login `request.user.username` 
+```bash
+def show_main(request):
+    product_entry = Product.objects.filter(user=request.user)
+    context = {
+        'name': request.user.username,
+```
+
+3.Menampilkan informasi di Template `main.html`
+```bash
+...
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+...
+```
+
+
+
 
 
 

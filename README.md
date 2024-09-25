@@ -455,6 +455,7 @@ Dalam keamanaan web, kedua tahap tersebut sangat dierplukan dalam penegembangan 
 `Authorization`: adalah untuk mengontrol akses apa saja yang bisa dilakukan oleh user saat memasuki server setelah berhasil di diautentikasi. Jadi fungsi ini bisa menentukan user dalam pengaksesan web.
 
 Proses Saat Pengguna Login:
+
 **1. Pengguna Mengisi Form Login:**
 - Pengguna mengisi form login dengan username dan password.
 - Form login dikirimkan ke server melalui permintaan POST.

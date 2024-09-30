@@ -1,31 +1,30 @@
-<div class="relative bg-gradient-to-r from-purple-500 via-purple-400 to-indigo-500 rounded-lg p-6 mb-6 text-white shadow-md">
+<div class="relative bg-gradient-to-r from-[#6b5e5e] via-[#b8a9a9] to-[#d2c6a2] rounded-lg p-6 mb-6 text-black shadow-md"> <!-- Mengganti #f4e1c1 dengan #d2c6a2 -->
     <div class="flex items-center justify-between">
       <!-- Informasi Produk -->
       <div>
-        <h3 class="text-lg font-bold">{{ product_entry.name }}</h3>
-        <p class="mt-2 text-sm">{{ product_entry.description }}</p>
+        <h3 class="text-lg font-bold text-black">{{ product_entry.name }}</h3>
+        <p class="mt-2 text-sm text-gray-700">{{ product_entry.description }}</p>
       </div>
       <!-- Ikon Produk -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 opacity-50" viewBox="0 0 24 24" fill="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 opacity-50 text-black" viewBox="0 0 24 24" fill="currentColor">
         <path d="M5 12l5 5L20 7" />
       </svg>
     </div>
     
     <!-- Harga Produk dan Progress Bar -->
     <div class="mt-4">
-      <p class="text-sm font-semibold">Price</p>
+      <p class="text-sm font-semibold text-gray-700">Price</p>
       <div class="flex items-center justify-between mt-2">
-        <span class="text-2xl font-bold">{{ product_entry.price }} IDR</span>
+        <span class="text-2xl font-bold text-black">{{ product_entry.price }} IDR</span>
         <div class="w-full h-2 ml-4 bg-white rounded overflow-hidden">
-          <div style="width: {{ product_entry.price_percentage }}%;" class="h-full bg-purple-700"></div>
+          <div style="width: {{ product_entry.price_percentage }}%;" class="h-full bg-[#7c4a4a]"></div>
         </div>
       </div>
     </div>
   
     <!-- Tombol Aksi -->
     <div class="mt-6 flex justify-between">
-      <a href="{% url 'main:edit_product' product_entry.pk %}" class="bg-white text-purple-600 px-4 py-2 rounded-full shadow-md hover:shadow-lg transition duration-300">Edit</a>
-      <a href="{% url 'main:delete_product' product_entry.pk %}" class="bg-white text-purple-600 px-4 py-2 rounded-full shadow-md hover:shadow-lg transition duration-300">Delete</a>
+      <a href="{% url 'main:edit_product' product_entry.pk %}" class="bg-[#b8a9a9] text-black px-4 py-2 rounded-full shadow-md hover:bg-[#a69595] transition duration-300">Edit</a>
+      <a href="{% url 'main:delete_product' product_entry.pk %}" class="bg-[#b8a9a9] text-black px-4 py-2 rounded-full shadow-md hover:bg-[#a69595] transition duration-300">Delete</a>
     </div>
   </div>
-  

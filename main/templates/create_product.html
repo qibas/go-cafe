@@ -11,7 +11,7 @@
   <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
     <h1 class="text-3xl font-bold text-center mb-8 text-black">Create Product Entry</h1>
   
-    <div class="bg-white shadow-md rounded-lg p-6 form-style">
+    <div class="bg-[#f4e1c1] shadow-md rounded-lg p-6 form-style">
       <form method="POST" class="space-y-6">
         {% csrf_token %}
         {% for field in form %}
@@ -31,7 +31,7 @@
           </div>
         {% endfor %}
         <div class="flex justify-center mt-6">
-          <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
+          <button type="submit" class="bg-[#7c4a4a] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#6b5e5e] transition duration-300 ease-in-out w-full"> <!-- Mengubah warna tombol -->
             Create Product Entry
           </button>
         </div>

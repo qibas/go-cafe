@@ -9,6 +9,7 @@
 - [TUGAS 2](#tugas-2)
 - [TUGAS 3](#tugas-3)
 - [TUGAS 4](#tugas-4)
+- [TUGAS 5](#tugas-5)
 #
 
 # Tugas 2 
@@ -749,8 +750,381 @@ def show_main(request):
 ...
 ```
 
+# Tugas 5
+## Urutan prioritas pengambilan CSS selector
+
+Dalam pengurutan prioritas, CSS dapat menentukan gaya mana yang akan diterapkan, Berikut adalah urutannya:
+
+**1. Inline Styles**
+Gaya yang ditetapkan langsung dalam atribut style pada elemen HTML memiliki prioritas tertinggi.
+```html
+<div style="color: red;">Hello World</div>
+```
+
+**2. IDs**
+Selector dengan ID memiliki prioritas lebih tinggi daripada selector dengan kelas, elemen, atau atribut.
+ID diwakili oleh tanda `#`
+```css
+
+#myId {
+    color: blue;
+}
+```
+
+**3. Classes, Pseudo-classes, dan Attribute Selectors**
+- Selector kelas, pseudo-class (seperti :hover), dan attribute selector memiliki prioritas yang lebih tinggi daripada selector elemen tetapi lebih rendah daripada ID.
+
+- Kelas diwakili oleh tanda ``"."``
+```css
+
+.animate-shine {
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.3));
+    background-size: 200% 100%;
+    animation: shine 3s infinite;
+}
+
+:hover {
+    color: orange;
+}
+```
+
+**4. Elements (Tag)**
+
+Selector elemen (tag) memiliki prioritas terendah.
+```css
+div {
+    color: yellow;
+}
+```
+
+**5. Universal Selector**
+Selector universal `(*)` memiliki prioritas yang paling rendah, digunakan untuk menerapkan gaya pada semua elemen.
+```css
+
+* {
+    color: black;
+}
+```
+**6. !important Declaration**
+
+Gaya yang ditandai dengan ``!important`` akan mengesampingkan semua gaya lain, tidak peduli spesifisitasnya. Namun, penggunaan ``!important`` 
+sebaiknya dihindari jika memungkinkan, karena dapat membuat kode lebih sulit untuk dikelola.
+
+```css
+.myClass {
+    color: green !important;
+}
+```
+
+## Pentingnya Responsive Design dalam pengembangan web
+
+Adapun alasan mengapa pendekatan sangat penting,
+
+- Menciptakan tampilan yang optimal di berbagai perangkat dan ukuran layar, seperti HP, laptop, tablet.
+
+- Responsive Design sering kali meningkatkan kecepatan halaman, yang merupakan faktor penting dalam SEO (Search Engine Optimization).
+
+Contoh penerapan **sebelum** menggunakan responsive design:
+```html
+<div class="header">
+    <h1>My Website</h1>
+    <nav>
+        <ul>
+            <li>Home</li>
+            <li>About</li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+</div>
+<div class="content">
+    <h2>Welcome to My Website</h2>
+    <p>This is an example of a website that is not responsive. Resize the window to see what happens!</p>
+</div>
+```
+
+Contoh penerapan **sesudah** menggunakan responsive design:
+
+```css
+<!-- CSS -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+    }
+    
+    nav ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    nav ul li {
+        display: inline;
+        margin-right: 20px;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+
+    /* Media Queries for Mobile */
+    @media (max-width: 600px) {
+        nav ul li {
+            display: block;
+            margin-right: 0;
+        }
+        
+        .header {
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- HTML -->
+<div class="header">
+    <h1>My Website</h1>
+    <nav>
+        <ul>
+            <li>Home</li>
+            <li>About</li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+</div>
+<div class="content">
+    <h2>Welcome to My Website</h2>
+    <p>This is an example of a responsive website. Resize the window to see how the layout adjusts!</p>
+</div>
+```
+## Perbandingan Sebelum dan Sesudah Menggunakan Responsive Design
+
+| Aspek                  | Sebelum Responsive Design                                     | Sesudah Responsive Design                                   |
+|------------------------|--------------------------------------------------------------|-----------------------------------------------------------|
+| **Tampilan Desktop**   | Didesain khusus untuk layar besar, elemen mungkin terpotong. | Elemen otomatis menyesuaikan berdasarkan ukuran layar.    |
+| **Navigasi**           | Navigasi bisa terlalu kecil untuk diklik dengan jari.      | Navigasi lebih mudah diakses dan ramah pengguna.          |
+| **Konten**             | Konten tidak optimal untuk dibaca di layar kecil.           | Konten dapat dibaca tanpa menggulir horizontal.           |
+| **Gambar**             | Gambar mungkin tidak terformat dengan baik.                 | Gambar menggunakan `object-fit` untuk tampilan yang baik. |
+| **Tombol dan Link**    | Tombol dan link mungkin terlalu dekat satu sama lain.       | Tombol dan link cukup besar untuk diklik dengan nyaman.   |
+
+## Margin, border, dan padding
+![image](https://github.com/user-attachments/assets/3c0b3059-ad54-4cb2-bb39-e9735df9c4c6)
+
+1. Margin
+
+Definisi: mengosongkan area di sekitar border (transparan)
+
+Fungsi: Margin digunakan untuk memberikan jarak antara elemen yang berbeda. Semakin besar nilai margin, semakin jauh elemen akan menjauh dari elemen lain di sekitarnya.
+
+Contoh implementasi:
+```css
+.element {
+    margin: 20px; /* Memberikan jarak 20px di semua sisi */
+}
+```
+2. Border
+
+Definisi:garis tepian yang membungkus konten dan padding-nya
+
+Fungsi: Border dapat digunakan untuk menyoroti atau membatasi elemen. Ukuran, gaya, dan warna border dapat disesuaikan.
+
+Contoh implementasi:
+```bash
+.form-style form input, form textarea, form select {
+    ...
+    border: 2px solid #bcbcbc;
+    border-radius: 0.375rem;
+}
+```
+
+3. Padding
+
+Definisi: mengosongkan area di sekitar konten (transparan)
+
+Fungsi:digunakan untuk memberi ruang tambahan di dalam elemen, sehingga konten tidak menempel pada batas. Ini membantu meningkatkan keterbacaan dan estetika.
+
+Contoh implementasi:
+
+```bash
+.form-style form input, form textarea, form select {
+    ...
+    padding: 0.5rem;
+    ...
+}
+```
+
+## Konsep `flex box` dan `grid layout`
+- `flex box` adalah metode penataan yang dirancang untuk satu dimensi (baik baris atau kolom). Ini memungkinkan elemen anak (flex items) dalam kontainer fleksibel (flex container) untuk diatur dalam baris atau kolom dengan cara yang lebih efisien.
+
+- `grid layout` adalah metode penataan dua dimensi (baik baris maupun kolom). Ini memungkinkan pengguna untuk membuat struktur kompleks dengan baris dan kolom yang dapat diatur secara bersamaan.
+
+## Perbandingan Flexbox dan Grid Layout
+
+| **Fitur**          | **Flexbox**                       | **Grid Layout**                   |
+|--------------------|-----------------------------------|-----------------------------------|
+| **Dimensi**        | Satu dimensi (baris atau kolom)  | Dua dimensi (baris dan kolom)    |
+| **Penggunaan**     | Mengatur elemen dalam satu garis  | Membuat tata letak kompleks       |
+| **Alignment**      | Fleksibilitas dalam alignment      | Pengaturan posisi presisi          |
+| **Kesesuaian**     | Responsif dan adaptif             | Responsif dengan kontrol lebih besar |
+| **Struktur**       | Mengutamakan urutan elemen        | Mengutamakan area grid            |
+| **Contoh Penggunaan** | Navigasi, galeri gambar       | Halaman web, layout majalah       |
+
+# Step-by-step checklist
+pada halaman login, register, dan create product, saya hanya menambahkan dekorasi warna dengan theme cafe.
+## Halaman login
+
+```html
+<div class="min-h-screen flex items-center justify-center w-screen bg-[#f4e1c1] py-12 px-4 sm:px-6 lg:px-8">
+    ...
+     <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#7c4a4a] hover:bg-[#6b5e5e] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c4a4a]"> <!-- Tombol merah-cokelat -->
+```
+
+## Halaman register
+pada dekorasi sama persis warnanya dengan halaman login, tetapi saya hanya merubah warna border saat mengisi field
+
+```css
+.form-style form input:focus, form textarea:focus, form select:focus {
+    outline: none;
+    border-color: #7c4a4a;
+    box-shadow: 0 0 0 3px #7c4a4a;
+}
+```
+
+## Halaman create product
+pada dekorasi halaman ini, sama persis dengan warna dengan halaman diatas
 
 
+## Kostumisasi halaman daftar product
+jika tidak ada produk yang ditambahkan, pada defaultnya adalah menampilkan gambar dan pesan seperti ini di direktori `main/templates/main.html`.
 
+```html
+{% if not product_entries %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src='https://www.pngitem.com/pimgs/m/139-1392425_comic-meme-faces-png-png-download-lol-face.png' alt="No Products" class="w-32 h-32 mb-4"/>
+        <p class="text-center text-gray-600 mt-4">Belum ada data product pada go cafe.</p>
+    </div>
+```
 
+Pada direktori ``main/templates/card_product.html`` saya modifikasi setiap tampilan product dengan menambahkan gradasi, ukuran font, warna, dan bar.
 
+```html
+<div class="relative bg-gradient-to-r from-[#6b5e5e] via-[#b8a9a9] to-[#d2c6a2] rounded-lg p-6 mb-6 text-black shadow-md"> <!-- Mengganti #f4e1c1 dengan #d2c6a2 -->
+    <div class="flex items-center justify-between">
+      <!-- Informasi Produk -->
+      <div>
+        <h3 class="text-lg font-bold text-black">{{ product_entry.name }}</h3>
+        <p class="mt-2 text-sm text-gray-700">{{ product_entry.description }}</p>
+      </div>
+      <!-- Ikon Produk -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 opacity-50 text-black" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M5 12l5 5L20 7" />
+      </svg>
+    </div>
+    
+    <!-- Harga Produk dan Progress Bar -->
+    <div class="mt-4">
+      <p class="text-sm font-semibold text-gray-700">Price</p>
+      <div class="flex items-center justify-between mt-2">
+        <span class="text-2xl font-bold text-black">{{ product_entry.price }} IDR</span>
+        <div class="w-full h-2 ml-4 bg-white rounded overflow-hidden">
+          <div style="width: {{ product_entry.price_percentage }}%;" class="h-full bg-[#7c4a4a]"></div>
+        </div>
+      </div>
+    </div>
+    ...
+```
+
+### Card Product
+
+Pada setiap card, kita tambahkan tombol edit dan delete di direktori ``main/templates/card_product.html``
+
+```html
+<!-- Tombol Aksi -->
+    <div class="mt-6 flex justify-between">
+      <a href="{% url 'main:edit_product' product_entry.pk %}" class="bg-[#b8a9a9] text-black px-4 py-2 rounded-full shadow-md hover:bg-[#a69595] transition duration-300">Edit</a>
+      <a href="{% url 'main:delete_product' product_entry.pk %}" class="bg-[#b8a9a9] text-black px-4 py-2 rounded-full shadow-md hover:bg-[#a69595] transition duration-300">Delete</a>
+    </div>
+  </div>
+```
+
+### Navbar
+
+**1. Struktur HTML Dasar:**
+
+Navbar dibangun dengan struktur HTML yang bersih dan terorganisir, memudahkan pengguna untuk menavigasi aplikasi.
+
+```html
+<nav class="bg-[#7c4a4a] shadow-lg fixed top-0 left-0 z-40 w-screen">
+```
+
+- class="bg-[#7c4a4a]": Menetapkan warna latar belakang cokelat untuk navbar.
+- fixed top-0 left-0: Memastikan navbar tetap di atas halaman saat pengguna menggulir.
+- z-40: Mengatur urutan tumpukan elemen sehingga navbar berada di atas elemen lainnya.
+
+**2. Container untuk Konten Navbar:**
+
+Menggunakan kelas utilitas dari Tailwind CSS untuk membuat kontainer responsif.
+```html
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+```
+**3. Flexbox untuk Penataan Elemen:**
+
+Menggunakan flexbox untuk menata elemen di dalam navbar dengan baik:
+```html
+<div class="flex items-center justify-between h-16">
+```
+
+**4. Judul Aplikasi:**
+
+Menampilkan nama aplikasi dengan teks besar dan tebal.
+```html
+
+<h1 class="text-2xl font-bold text-center text-white">Go Cafe</h1>
+```
+
+**5. Tombol Aksi (Login/Register/Logout):**
+
+Responsif: Pada tampilan desktop, tombol Login dan Register ditampilkan dengan gaya yang mencolok.
+Tombol Logout: Jika pengguna sudah terautentikasi, mereka akan melihat pesan sambutan dan tombol Logout.
+```html
+
+<div class="hidden md:flex items-center"> <!-- Tombol untuk desktop -->
+```
+
+**6. Mobile Menu Button:**
+
+Menyediakan tombol hamburger untuk mengakses menu mobile saat layar kecil.
+```html
+
+<div class="md:hidden flex items-center">
+    <button class="mobile-menu-button">
+```
+
+**7. Mobile Menu:**
+
+Menggunakan mobile-menu untuk menampilkan menu yang tersembunyi di perangkat mobile.
+Menu ini hanya muncul saat pengguna mengklik tombol hamburger.
+```html
+
+<div class="mobile-menu hidden md:hidden px-4 w-full md:max-w-full">
+```
+
+**8. Interaktivitas dengan JavaScript:**
+
+Menambahkan fungsionalitas interaktif untuk tombol mobile menu.
+```bash
+
+const btn = document.querySelector("button.mobile-menu-button");
+const menu = document.querySelector(".mobile-menu");
+
+btn.addEventListener("click", () => {
+    menu.classList.toggle("hidden");
+});
+
+```

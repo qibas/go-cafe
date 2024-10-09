@@ -17,7 +17,8 @@
       <div class="flex items-center justify-between mt-2">
         <span class="text-2xl font-bold text-black">{{ product_entry.price }} IDR</span>
         <div class="w-full h-2 ml-4 bg-white rounded overflow-hidden">
-          <div style="width: {{ product_entry.price_percentage }}%;" class="h-full bg-[#7c4a4a]"></div>
+          <div style="width: ${item.fields.price > 50000 ? 100 : (item.fields.price / 50000) * 100}%;"
+                        class="h-full bg-[#7c4a4a]"></div>
         </div>
       </div>
     </div>

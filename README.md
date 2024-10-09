@@ -10,6 +10,7 @@
 - [TUGAS 3](#tugas-3)
 - [TUGAS 4](#tugas-4)
 - [TUGAS 5](#tugas-5)
+- [TUGAS 6](#tugas-6)
 #
 
 # Tugas 2 
@@ -1128,3 +1129,192 @@ btn.addEventListener("click", () => {
 });
 
 ```
+
+# Tugas 6
+[Back to Contents](#contents)
+
+## Penggunaan JavaScript dalam pengembangan web
+
+1. **Manipulasi Halaman Web Secara Dinamis**
+
+    JavaScript memungkinkan perubahan pada konten dan tampilan halaman web tanpa perlu memuat ulang seluruh halaman. Hal ini memberikan pengalaman yang lebih interaktif dan responsif kepada pengguna.
+
+2. **Interaksi yang Lebih Baik dengan pengguna**
+
+    JavaScript memungkinkan pengembang untuk menambahkan fitur interaktif seperti validasi form, animasi, dan respons dinamis berdasarkan input pengguna, sehingga meningkatkan keterlibatan dan kenyamanan pengguna saat menggunakan situs web.
+    
+
+3. **Peningkatan Performa Client-Side**
+    Karena JavaScript umumnya berjalan di sisi pengguna (client-side), hal ini mengurangi beban kerja pada server.
+
+
+4. **Kompatibilitas dengan HTML dan CSS**
+     JavaScript bekerja sangat baik bersama HTML dan CSS untuk menciptakan antarmuka pengguna yang kaya dan dinamis. Kemampuan untuk mengubah gaya dan elemen halaman secara real-time membuat pengembangan menjadi lebih efisien dan menarik.
+
+## Fungsi dari penggunaan `await` ketika kita menggunakan `fetch()`. 
+
+fungsi `await` digunakan untuk menunggu hasil dari fungsi `async`. Ini memastikan bahwa variabel yang kita gunakan untuk menyimpan hasil dari fetch() berisi data yang benar sebelum digunakan dalam langkah-langkah berikutnya.
+
+berikut tampilan menggunakan await di implementasi code saya, di direktori `main.html`
+```javascript
+const productEntries = await getProductEntries();
+```
+await diatas digunakan untuk menunggu hasil dari fungsi `getProductEntries()` kemudian hasil datanya akan disimpan di productEntries.
+
+## Dan Apa yang akan terjadi jika kita tidak menggunakan `await`?
+```javascript
+const productEntries = getProductEntries(); // Tanpa menggunakan await
+```
+Jika tidak menggunakan await, maka productEntries tidak akan berisi data yang kamu harapkan, melainkan sebuah promise yang belum selesai.
+
+Hal ini bisa menyebabkan rendering HTML tidak berjalan seperti yang diharapkan, karena data produk mungkin belum tersedia pada saat pembuatan elemen HTML.
+
+## Mengapa diperlukan menggunakan decorator `csrf_exempt` pada view yang akan digunakan untuk AJAX POST?
+Decorator `csrf_exempt` membuat Django tidak perlu mengecek keberadaan `csrf_token` pada POST request yang dikirimkan ke fungsi ini. 
+```python
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    # Sanitize the input using strip_tags
+    data = request.POST.copy()
+    data['name'] = strip_tags(data.get('name', ''))
+    data['description'] = strip_tags(data.get('description', ''))
+    
+    form = ProductEntryForm(data)
+    if form.is_valid():
+        new_product = form.save(commit=False)
+        new_product.user = request.user
+        new_product.save()
+        return JsonResponse({'status': 'success'}, status=201)
+    else:
+        return JsonResponse({'errors': form.errors}, status=400)
+```
+view yang akan menerima permintaan AJAX POST, itu berarti unntuk memberitahu Django untuk mengabaikan pemeriksaan CSRF untuk view tersebut. Dengan kata lain, Django tidak akan memverifikasi apakah permintaan POST tersebut mengandung token CSRF yang valid.
+
+## Pembersihan data input pengguna dilakukan di belakang (backend) juga. Mengapa hal tersebut tidak dilakukan di frontend saja?
+
+Pembersihan data di backend adalah proses memastikan bahwa data yang diterima dari pengguna tidak mengandung elemen berbahaya yang dapat membahayakan aplikasi atau data lainnya.
+
+Jika pembersihan data tidak dilakukan frontend, maka:
+1. Penyerang bisa dengan mudah memodifikasi kode JavaScript di browser mereka menggunakan alat Developer Tools, atau dengan permintaan HTTP langsung tanpa melalui antarmuka aplikasi HTTP.
+
+2. Data yang masuk ke server dari sumber lain, bukan dari antarmuka pengguna. Data bisa datang dari pihak ketiga, API eksternal atau lainnya yang tidak menggunakan frontend kita
+
+**Contoh frontend:**
+```html
+<button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-[#7c4a4a]">
+    Add New Product Entry by AJAX
+</button>
+```
+
+**Contoh backend:**
+```python 
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def add_product_entry_ajax(request):
+    if request.method == 'POST':
+        # Logika pemrosesan data yang diterima dari frontend
+        ...
+```
+## Step-by-step 
+
+### AJAX GET
+1. Mengambil Data Mood Menggunakan AJAX GET:
+Dalam kode yang saya buat, fungsi `getProductEntries()` melakukan permintaan GET ke server untuk mengambil data produk dengan menggunakan AJAX:
+```javascript
+async function getProductEntries(){
+    return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+}
+```
+Fungsi ini menggunakan `fetch()` untuk mengirim permintaan GET ke URL yang mengarah ke view show_json, yang hanya mengambil data produk milik pengguna yang sedang login.
+
+2. Menampilkan Data Menggunakan AJAX GET:
+Fungsi `refreshProductEntries()` memanggil fungsi `getProductEntries()` dan kemudian menampilkan data produk dalam elemen HTML:
+```javascript
+ async function refreshProductEntries() {
+    document.getElementById("product_entry_cards").innerHTML = "";
+    document.getElementById("product_entry_cards").className = "";
+
+    const productEntries = await getProductEntries();
+    let htmlString = "";
+    let classNameString = "";
+
+    if (productEntries.length === 0) {
+        classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+        htmlString = `
+        ...
+```
+### AJAX POST
+1. **Membuat Tombol yang Membuka Modal Form untuk Menambahkan Produk:**
+```html
+<button onclick="showModal();" class="btn">Add New Product Entry by AJAX</button>
+```
+Fungsi `showModal()` akan memunculkan modal di mana pengguna dapat mengisi form untuk menambahkan produk baru.
+
+2. **Fungsi View untuk Menambahkan Produk ke Database:**
+```python
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    data = request.POST.copy()
+    data['name'] = strip_tags(data.get('name', ''))
+    data['description'] = strip_tags(data.get('description', ''))
+    form = ProductEntryForm(data)
+    if form.is_valid():
+        new_product = form.save(commit=False)
+        new_product.user = request.user
+        new_product.save()
+        return JsonResponse({'status': 'success'}, status=201)
+    else:
+        return JsonResponse({'errors': form.errors}, status=400)
+```
+View ini menerima data POST dari form, membersihkan input dengan menggunakan `strip_tags()` untuk menghindari potensi XSS, dan menyimpan produk ke database jika valid.
+
+3. Path `/create-ajax/` Mengarah ke Fungsi View Baru: 
+```python
+path('create-product-entry-ajax', add_product_entry_ajax, name='add_product_entry_ajax'),
+```
+4. **Menghubungkan Form dalam Modal ke Path `/create-ajax/` untuk AJAX POST:**
+Pada kode JavaScript kamu, permintaan POST dilakukan menggunakan `fetch()` yang mengirim data form ke server:
+```javascript
+function addProductEntry() {
+    fetch("{% url 'main:add_product_entry_ajax' %}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: new FormData(document.querySelector('#productEntryForm')),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                if (data.errors) {
+                    displayFormErrors(data.errors); // Menampilkan kesalahan di form
+                }
+                throw new Error('Validasi server gagal.');
+            });
+        }
+        return response.json();
+    })
+    .then(() => {
+        refreshProductEntries(); // Refresh data produk jika berhasil
+        document.getElementById("productEntryForm").reset(); // Reset form jika berhasil
+        hideModal(); // Sembunyikan modal jika berhasil
+    })
+    .catch(error => {
+        console.error('Error di addProductEntry:', error);
+    });
+
+    return false;
+}
+```
+Permintaan ini dikirim ke path `/create-ajax/`, dan jika berhasil, produk baru akan ditambahkan ke daftar produk tanpa perlu melakukan refresh halaman utama.
+
+5. **Melakukan Refresh pada Halaman Utama Secara Asinkronus:**
+Fungsi `refreshProductEntries()` dipanggil setelah produk baru berhasil ditambahkan untuk memperbarui daftar produk secara dinamis, tanpa perlu reload halaman utama secara keseluruhan.
+
+
+
+
+

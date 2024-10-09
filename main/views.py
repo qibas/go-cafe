@@ -13,24 +13,21 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import reverse
 from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+from django.http import JsonResponse
 
 
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
-    product_entry = Product.objects.filter(user=request.user)
-    max_price = 50000
-
-    for product in product_entry:
-        product.price_percentage = min((product.price / max_price) * 100, 100)
-
     context = {
         'name': request.user.username,
         'name_person' : 'Rajendra Rifqi Baskara',
         'class_name': 'PBP C',
         'npm' : '2306245680',
-        'product_entries' : product_entry,
-        'last_login': request.COOKIES['last_login'],
+        # 'last_login': request.COOKIES['last_login'],
     }
 
     return render(request, "main.html", context)
@@ -49,11 +46,11 @@ def create_product(request):
     return render(request, "create_product.html", context)
 
 def show_xml(request):
-    data = Product.objects.all()
+    data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
 def show_json(request):
-    data = Product.objects.all()
+    data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def show_xml_by_id(request, id):
@@ -84,8 +81,9 @@ def login_user(request):
         user = form.get_user()
         login(request, user)
         response = HttpResponseRedirect(reverse("main:show_main"))
-        response.set_cookie('last_login', str(datetime.datetime.now()))
         return response
+      else:
+        messages.error(request, "Invalid username or password. Please try again.")
 
    else:
       form = AuthenticationForm(request)
@@ -95,7 +93,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     response = HttpResponseRedirect(reverse('main:login'))
-    response.delete_cookie('last_login')
+    # response.delete_cookie('last_login')
     return response
 
 def edit_product(request, id):
@@ -120,3 +118,20 @@ def delete_product(request, id):
     product.delete()
     # Kembali ke halaman awal
     return HttpResponseRedirect(reverse('main:show_main'))
+
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    # Sanitize the input using strip_tags
+    data = request.POST.copy()
+    data['name'] = strip_tags(data.get('name', ''))
+    data['description'] = strip_tags(data.get('description', ''))
+    
+    form = ProductEntryForm(data)
+    if form.is_valid():
+        new_product = form.save(commit=False)
+        new_product.user = request.user
+        new_product.save()
+        return JsonResponse({'status': 'success'}, status=201)
+    else:
+        return JsonResponse({'errors': form.errors}, status=400)
